@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LesionMC - Minecraft Server</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="lesionmc.png">
+    <style>
+        :root {
+            --primary: #d32f2f;
+            --secondary: #b71c1c;
+            --dark: #1a1a1a;
+            --darker: #0f0f0f;
+            --accent: #ff5252;
+            --text: #ffffff;
+            --light-red: #ffcdd2;
+            --card-bg: rgba(35, 35, 35, 0.6);
+            --online: #4CAF50;
+            --offline: #f44336;
+            --loading: #FFC107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2, h3, .logo-text {
+            font-family: 'Oxanium', 'Arial Narrow', Arial, sans-serif;
+            font-weight: 700;
+        }
+        
+        /* Particles Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover img {
+            transform: rotate(5deg) scale(1.1);
+        }
+        
+        .logo-text {
+            color: var(--text);
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #000;
+            transition: all 0.3s ease;
+        }
+        
+        .logo:hover .logo-text {
+            color: var(--accent);
+        }
+        
+        .logo-text span {
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .logo:hover .logo-text span {
+            color: var(--light-red);
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        /* Navigation Underline Animation */
+        nav a:not(.active)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:not(.active):hover::after {
+            width: 100%;
+        }
+        
+        nav a:not(.active):hover {
+            color: var(--light-red);
+        }
+        
+        nav a.active {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(211, 47, 47, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
+            }
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle:hover {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 120px 20px 60px;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') no-repeat center center/cover;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+        
+        .hero-content {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, var(--light-red), var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255, 82, 82, 0.5);
+            }
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Server Status in Hero Section */
+        .server-status-compact {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px auto;
+            max-width: 800px;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--primary);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .status-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+        }
+        
+        .status-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .icon-online {
+            background-color: var(--online);
+            box-shadow: 0 0 8px var(--online);
+        }
+        
+        .icon-offline {
+            background-color: var(--offline);
+            box-shadow: 0 0 8px var(--offline);
+        }
+        
+        .icon-loading {
+            background-color: var(--loading);
+            box-shadow: 0 0 8px var(--loading);
+            animation: pulse-status 1.5s infinite;
+        }
+        
+        @keyframes pulse-status {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .status-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .status-value {
+            font-weight: bold;
+            margin-left: 5px;
+            font-family: 'Oxanium', monospace;
+        }
+        
+        .server-ip {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 20px 0;
+            border: 2px solid var(--primary);
+            font-family: monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .server-ip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .server-ip:hover::before {
+            left: 100%;
+            transition: left 0.7s ease;
+        }
+        
+        .server-ip:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .cta-button:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.4);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 5%;
+            text-align: center;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+            animation: linePulse 2s infinite;
+        }
+        
+        @keyframes linePulse {
+            0% {
+                width: 80px;
+            }
+            50% {
+                width: 120px;
+            }
+            100% {
+                width: 80px;
+            }
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+        
+        .feature-card:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover i {
+            transform: scale(1.2) rotate(5deg);
+            color: var(--light-red);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--light-red);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover h3 {
+            color: var(--accent);
+        }
+        
+        .feature-card p {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover p {
+            color: var(--text);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--darker);
+            padding: 40px 5% 20px;
+            margin-top: auto;
+            border-top: 2px solid var(--primary);
+            position: relative;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .footer-section:hover h3::after {
+            width: 80px;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #ccc;
+            margin-bottom: 10px;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: var(--primary);
+            transform: translateY(-3px) rotate(5deg);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+        
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 99;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .scroll-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-to-top:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            nav {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                background: var(--dark);
+                width: 80%;
+                height: calc(100vh - 70px);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 40px 20px;
+                transition: right 0.3s ease;
+                border-left: 2px solid var(--primary);
+            }
+            
+            nav.active {
+                right: 0;
+            }
+            
+            nav a {
+                margin: 15px 0;
+                font-size: 1.2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .server-status-compact {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .status-item {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+            }
+            
+            .logo img {
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Scroll to Top Button -->
+    <div class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <header>
+        <a href="#" class="logo">
+            <img src="https://i.imgur.com/placeholder.png" alt="LesionMC Logo" onerror="this.src='https://via.placeholder.com/50x50/d32f2f/ffffff?text=L'">
+            <div class="logo-text">Lesion<span>MC</span></div>
+        </a>
+        
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <nav>
+            <a href="#" class="active">Home</a>
+            <a href="#">About US</a>
+            <a href="#">Contact</a>
+            <a href="#">Team</a>
+            <a href="#">Vote</a>
+            <a href="#">Store</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Welcome to LesionMC</h1>
+                <p>Experience Minecraft like never before! Join our vibrant community and explore a world of endless possibilities.</p>
+                
+                <!-- Compact Server Status in Hero -->
+                <div class="server-status-compact">
+                    <div class="status-item">
+                        <span class="status-icon icon-loading" id="status-icon-players"></span>
+                        <span class="status-text">Players: <span class="status-value" id="player-count">Checking...</span></span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-icon icon-loading" id="status-icon-server"></span>
+                        <span class="status-text">Status: <span class="status-value" id="server-status-text">Checking...</span></span>
+                    </div>
+                </div>
+                
+                <div class="server-ip" onclick="copyIP()">
+                    lesionmc.xyz <i class="fas fa-copy"></i>
+                </div>
+                <br>
+                <a href="#" class="cta-button">Join Now <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </section>
+        
+        <section class="features">
+            <h2 class="section-title">Server Features</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure Environment</h3>
+                    <p>Enjoy a cheat-free experience with our advanced anti-griefing and anti-cheat systems.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-gamepad"></i>
+                    <h3>Mini Games</h3>
+                    <p>Play a variety of custom mini-games with unique mechanics and rewards.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Active Community</h3>
+                    <p>Join thousands of players in our friendly and welcoming community.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>Regular Updates</h3>
+                    <p>We constantly add new content and features to keep the gameplay fresh.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-store"></i>
+                    <h3>Custom Economy</h3>
+                    <p>Engage in our player-driven economy with custom shops and trading systems.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-dragon"></i>
+                    <h3>Epic Quests</h3>
+                    <p>Embark on custom adventures with unique storylines and valuable rewards.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About LesionMC</h3>
+                <p>LesionMC is a premium Minecraft server that offers a unique and immersive gaming experience since 2023.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#">Home</a>
+                <a href="#">About Us</a>
+                <a href="#">Server Rules</a>
+                <a href="#">Support</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <p><i class="fas fa-envelope"></i> support@lesionmc.xyz</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 LesionMC. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles.js with red theme
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#d32f2f" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#d32f2f",
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+            
+            // Fetch server status on page load
+            fetchStatus();
+        });
+        
+        // Mobile menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('nav').classList.toggle('active');
+        });
+        
+        // Copy IP to clipboard
+        function copyIP() {
+            navigator.clipboard.writeText("lesionmc.xyz");
+            
+            const ipElement = document.querySelector('.server-ip');
+            const originalHtml = ipElement.innerHTML;
+            
+            ipElement.innerHTML = 'Copied to clipboard! <i class="fas fa-check"></i>';
+            
+            setTimeout(() => {
+                ipElement.innerHTML = originalHtml;
+            }, 2000);
+        }
+        
+        // Scroll to top functionality
+        const scrollButton = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollButton.classList.add('active');
+            } else {
+                scrollButton.classList.remove('active');
+            }
+        });
+        
+        scrollButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Server status monitoring function
+        const HOST = "lesionmc.xyz";
+        const API_URL = `https://api.mcsrvstat.us/2/${HOST}`;
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch(API_URL, { cache: "no-store" });
+                const data = await res.json();
+
+                const playerCount = document.getElementById("player-count");
+                const serverStatusText = document.getElementById("server-status-text");
+                const statusIconPlayers = document.getElementById("status-icon-players");
+                const statusIconServer = document.getElementById("status-icon-server");
+
+                if (data.online) {
+                    // Update player count
+                    playerCount.textContent = `${data.players.online}/${data.players.max}`;
+                    
+                    // Update server status
+                    serverStatusText.textContent = "Online";
+                    
+                    // Update status icons
+                    statusIconPlayers.className = "status-icon icon-online";
+                    statusIconServer.className = "status-icon icon-online";
+                } else {
+                    // Server is offline
+                    playerCount.textContent = "0/0";
+                    serverStatusText.textContent = "Offline";
+                    
+                    // Update status icons
+                    statusIconPlayers.className = "status-icon icon-offline";
+                    statusIconServer.className = "status-icon icon-offline";
+                }
+            } catch (e) {
+                // Error handling
+                const playerCount = document.getElementById("player-count");
+                const serverStatusText = document.getElementById("server-status-text");
+                const statusIconPlayers = document.getElementById("status-icon-players");
+                const statusIconServer = document.getElementById("status-icon-server");
+                
+                playerCount.textContent = "Error";
+                serverStatusText.textContent = "Error";
+                
+                statusIconPlayers.className = "status-icon icon-offline";
+                statusIconServer.className = "status-icon icon-offline";
+            }
+        }
+
+        // Refresh status every 30 seconds
+        setInterval(fetchStatus, 30000);
+    </script>
+</body>
+</html>
